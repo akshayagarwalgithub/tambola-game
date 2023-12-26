@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambola Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            height: 100vh; /* Ensure the body takes the full height of the viewport */
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        #currentNumber {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: left;
+            width: 100%;
+        }
+
+        #numberList {
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: left;
+            width: 100%;
+        }
+
+        #counter {
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: right;
+            width: 100%;
+        }
+
+        #generateBtn {
+            font-size: 14px;
+            padding: 8px;
+            cursor: pointer;
+            width: 100%;
+            background-color: green;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        #resetBtn {
+            font-size: 14px;
+            padding: 8px;
+            cursor: pointer;
+            width: 100%;
+            background-color: red;
+            color: white;
+            margin-top: auto; /* Pushes the button to the bottom */
+        }
+    </style>
+</head>
+<body>
+    <h1>Tambola Game</h1>
+    <div id="currentNumber">Click the button to generate a current number!</div>
+    <div id="numberList">Generated Numbers: </div>
+    <div id="counter">Total Numbers Generated: 0</div>
+    <button id="generateBtn" onclick="generateRandomNumber()">Generate Current Number</button>
+    <button id="resetBtn" onclick="resetGame()">Reset Game</button>
+
+    <script>
+        // Array to keep track of generated numbers
+        let generatedNumbers = [];
+        let generatedCount = 0;
+
+        // Load previously generated numbers from localStorage
+        const storedNumbers = localStorage.getItem('generatedNumbers');
+        if (storedNumbers) {
+            generatedNumbers = JSON.parse(storedNumbers);
+            generatedCount = generatedNumbers.length;
+            updateNumberList();
+        }
+
+        function generateRandomNumber() {
+            const min = 1;
+            const max = 90;
+
+            if (generatedNumbers.length === max - min + 1) {
+                alert('All numbers have been generated!');
+                return;
+            }
+
+            let randomNumber;
+            do {
+                randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+            } while (generatedNumbers.includes(randomNumber));
+
+            generatedNumbers.push(randomNumber);
+            generatedCount++;
+            updateCurrentNumber(randomNumber);
+            updateNumberList();
+            updateCounter();
+
+            // Save generated numbers to localStorage
+            localStorage.setItem('generatedNumbers', JSON.stringify(generatedNumbers));
+        }
+
+        function resetGame() {
+            // Clear stored numbers and reset game state
+            localStorage.removeItem('generatedNumbers');
+            generatedNumbers = [];
+            generatedCount = 0;
+            updateCurrentNumber('Click the button to generate a current number!');
+            updateNumberList();
+            updateCounter();
+        }
+
+        function updateCurrentNumber(number) {
+            const currentNumberDiv = document.getElementById('currentNumber');
+            currentNumberDiv.textContent = `Current Number: ${number}`;
+        }
+
+        function updateNumberList() {
+            const numberListDiv = document.getElementById('numberList');
+            const numbersText = generatedNumbers.join(', ');
+            numberListDiv.textContent = `Generated Numbers: ${numbersText}`;
+        }
+
+        function updateCounter() {
+            const counterDiv = document.getElementById('counter');
+            counterDiv.textContent = `Total Numbers Generated: ${generatedCount}`;
+        }
+    </script>
+</body>
+</html>
